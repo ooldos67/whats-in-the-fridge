@@ -1,0 +1,45 @@
+{
+  "info": {
+    "_postman_id": "c8f283c7-4c94-4ab3-b87c-5bb1e8ef4309",
+    "name": "W(i)TF API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create User",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"username\": \"Dominic\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}/user",
+          "host": ["{{url}"],
+          "path": ["user"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get User",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{url}/user/{{userId}}",
+          "protocol": "http",
+          "host": ["{{url}}"],
+          "path": ["user", "{{userId}}"]
+        }
+      },
+      "response": []
+    }
+  ]
+}

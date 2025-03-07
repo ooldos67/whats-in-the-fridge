@@ -1,5 +1,5 @@
 {
-  "name": "Solo_Project",
+  "name": "solo_project",
   "private": true,
   "scripts": {
     "build": "turbo run build",
