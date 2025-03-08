@@ -23,7 +23,7 @@
   "scripts": {
     "start": "node dist/index.js",
     "build": "tsc",
-    "dev": "nodemon ./src/index.ts",
+    "dev": "nodemon src/index.ts",
     "lint": "eslint ./src/**"
   },
   "dependencies": {
@@ -32,6 +32,5 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "morgan": "^1.10.0"
-  },
-  "type": "module"
+  }
 }

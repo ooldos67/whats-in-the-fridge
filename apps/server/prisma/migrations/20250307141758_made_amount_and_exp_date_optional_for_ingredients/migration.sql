@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Ingredient" ALTER COLUMN "amount" DROP NOT NULL,
+ALTER COLUMN "expDate" DROP NOT NULL;

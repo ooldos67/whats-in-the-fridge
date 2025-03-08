@@ -20,8 +20,8 @@
           }
         },
         "url": {
-          "raw": "{{url}/user",
-          "host": ["{{url}"],
+          "raw": "{{url}}/user",
+          "host": ["{{url}}"],
           "path": ["user"]
         }
       },
@@ -33,10 +33,70 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{url}/user/{{userId}}",
+          "raw": "{{url}}/user/{{userId}}",
           "protocol": "http",
           "host": ["{{url}}"],
           "path": ["user", "{{userId}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Fridge",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{url}}/fridge/{{userId}}",
+          "protocol": "http",
+          "host": ["{{url}}"],
+          "path": ["fridge", "{{userId}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Add Ingredient to Fridge",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"ingredientName\": \"Tomato\", \"amount\": \"2\", \"expDate\": \"2025-12-31\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/fridge/{{userId}}/ingredient",
+          "protocol": "http",
+          "host": ["{{url}}"],
+          "path": ["fridge", "{{userId}}", "ingredient"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Remove Ingredient from Fridge",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"ingredientId\": \"{{ingredientId}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/fridge/{{userId}}/ingredient",
+          "protocol": "http",
+          "host": ["{{url}}"],
+          "path": ["fridge", "{{userId}}", "ingredient"]
         }
       },
       "response": []

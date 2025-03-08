@@ -2,7 +2,7 @@ import usersModel from '../models/userModel'
 import { Request, Response } from 'express'
 
 const usersController = {
-  async createtUser(req: Request, res: Response): Promise<void> {
+  async createUser(req: Request, res: Response): Promise<void> {
     try {
       const { username } = req.body
 
@@ -20,21 +20,24 @@ const usersController = {
 
       res.status(201).json({ message: 'User created successfully', user: user })
     } catch (error) {
+      console.error(error)
       res.status(500).json({ error: 'Error creating user' })
     }
   },
 
   async getUser(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params
+      const { userId } = req.params
 
-      const user = await usersModel.get(id)
+      const user = await usersModel.get(userId)
+
       if (!user) {
         res.status(404).json({ error: 'User not found' })
         return
       }
-      res.status(200).json(user)
+      res.status(200).json({ user })
     } catch (error) {
+      console.error(error)
       res.status(500).json({ error: 'Error fetching user' })
     }
   },
