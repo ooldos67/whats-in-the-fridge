@@ -1,7 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 export function Dashboard() {
+  const navigate = useNavigate();
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gray-100">
       <h1 className="text-3xl font-bold mb-6">What's in the Fridge?</h1>
@@ -17,7 +20,11 @@ export function Dashboard() {
               already have. Let’s turn what’s in your fridge into something
               amazing!
             </p>
-            <Button variant="outline" className="mt-4">
+            <Button
+              variant="outline"
+              className="mt-4 transition-colors hover:scale-105 hover:cursor-pointer"
+              onClick={() => navigate("/search-recipes")}
+            >
               Explore
             </Button>
           </CardContent>
@@ -33,7 +40,10 @@ export function Dashboard() {
               Reduce food waste, stay organized, and make sure nothing goes to
               waste.
             </p>
-            <Button className="mt-4 bg-black text-white">
+            <Button
+              className="mt-4 bg-black text-white transition-colors hover:scale-105 hover:cursor-pointer"
+              onClick={() => navigate("/my-fridge")}
+            >
               Open the Fridge
             </Button>
           </CardContent>
@@ -49,7 +59,12 @@ export function Dashboard() {
               go-to meal or something new you want to try, access them anytime
               with ease.
             </p>
-            <Button className="mt-4 bg-black text-white">Get Cooking!</Button>
+            <Button
+              className="mt-4 bg-black text-white transition-colors hover:scale-105 hover:cursor-pointer"
+              onClick={() => navigate("/saved-recipes")}
+            >
+              Get Cooking!
+            </Button>
           </CardContent>
         </Card>
 
@@ -59,7 +74,10 @@ export function Dashboard() {
           </CardHeader>
           <CardContent>
             <p>Inspire others by sharing your favorite meals!</p>
-            <Button variant="outline" className="mt-4">
+            <Button
+              variant="outline"
+              className="mt-4 transition-colors hover:scale-105 hover:cursor-pointer"
+            >
               Explore
             </Button>
           </CardContent>
