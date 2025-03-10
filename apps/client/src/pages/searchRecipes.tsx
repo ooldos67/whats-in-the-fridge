@@ -9,6 +9,7 @@ import { Checkbox } from "@radix-ui/react-checkbox";
 import { Heart, ChevronDown, Check } from "lucide-react";
 import Sidebar from "@/components/ui/sidebar";
 import { useEffect, useState } from "react";
+import { openai } from "openai";
 
 // Fake data for recipes (replace with real data later)
 const fakeRecipes = Array.from({ length: 15 }, (_, index) => ({
@@ -25,11 +26,25 @@ interface Ingredient {
   amount: string;
 }
 
+const OPEN_AI = import.meta.env.OPENAI_API_KEY;
+console.log(OPEN_AI);
+
 export default function SearchRecipes() {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-  const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
+  const [selectedIngredients, setSelectedIngredients] = useState<Ingredient[]>(
+    []
+  );
   const [mealType, setMealType] = useState<string>("");
   const [dietaryRequirements, setDietaryRequirements] = useState<string>("");
+  const [recipeSearchCriteria, setRecipeSearchCriteria] = useState<{
+    ingredients: Ingredient[];
+    mealType: string;
+    dietaryRequirements: string;
+  }>({
+    ingredients: [],
+    mealType: "",
+    dietaryRequirements: "",
+  });
 
   const userId = "3e7a22e8-f0d8-4fbd-9e08-a7b9a8677bf7"; // Temp hardcoded user
   const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -41,6 +56,7 @@ export default function SearchRecipes() {
 
       const data = await response.json();
       setIngredients(data.ingredients);
+      console.log(ingredients);
     } catch (error) {
       console.error("Error fetching ingredients:", error);
     }
@@ -50,13 +66,18 @@ export default function SearchRecipes() {
     fetchFridge();
   }, []);
 
-  const toggleIngredient = (ingredientName: string) => {
-    setSelectedIngredients(
-      (prev) =>
-        prev.includes(ingredientName)
-          ? prev.filter((name) => name !== ingredientName) // remove if already selected
-          : [...prev, ingredientName] // add if not already selected
+  const toggleIngredient = (ingredientId: string) => {
+    const ingredient = ingredients.find(
+      (ingredient) => ingredient.id === ingredientId
     );
+    if (ingredient) {
+      setSelectedIngredients(
+        (prev) =>
+          prev.some((selected) => selected.id === ingredientId)
+            ? prev.filter((item) => item.id !== ingredientId) // Remove if already selected
+            : [...prev, ingredient] // Add if not already selected
+      );
+    }
   };
 
   const toggleSelectAll = () => {
@@ -65,8 +86,22 @@ export default function SearchRecipes() {
       setSelectedIngredients([]);
     } else {
       // selected ingredients = the list of ingredients from fetchFridge()
-      setSelectedIngredients(ingredients.map((ingredient) => ingredient.name));
+      setSelectedIngredients(ingredients);
     }
+  };
+
+  const handleSearchSubmit = () => {
+    setRecipeSearchCriteria({
+      ingredients: selectedIngredients,
+      mealType,
+      dietaryRequirements,
+    });
+
+    console.log("Saved search criteria:", {
+      ingredients: selectedIngredients,
+      mealType,
+      dietaryRequirements,
+    });
   };
 
   return (
@@ -107,11 +142,13 @@ export default function SearchRecipes() {
                   <div
                     key={ingredient.id}
                     className="flex items-center justify-between gap-2 p-2 cursor-pointer"
-                    onClick={() => toggleIngredient(ingredient.name)}
+                    onClick={() => toggleIngredient(ingredient.id)}
                   >
                     <div className="flex items-center gap-2">
                       <Checkbox
-                        checked={selectedIngredients.includes(ingredient.name)}
+                        checked={selectedIngredients.some(
+                          (selected) => selected.id === ingredient.id
+                        )}
                       />
                       <span className="flex justify-between w-full">
                         <span>{ingredient.name}</span>
@@ -121,9 +158,9 @@ export default function SearchRecipes() {
                       </span>
                     </div>
 
-                    {selectedIngredients.includes(ingredient.name) && (
-                      <Check className="w-4 h-4 text-gray-800" />
-                    )}
+                    {selectedIngredients.some(
+                      (selected) => selected.id === ingredient.id
+                    ) && <Check className="w-4 h-4 text-gray-800" />}
                   </div>
                 ))
               ) : (
@@ -199,7 +236,9 @@ export default function SearchRecipes() {
           </Popover>
 
           {/* Search Button (No functionality for now) */}
-          <Button className="w-1/4 p-3">Search Recipes</Button>
+          <Button onClick={handleSearchSubmit} className="w-1/4 p-3">
+            Search Recipes
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
