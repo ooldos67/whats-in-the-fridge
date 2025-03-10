@@ -1,14 +1,14 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@radix-ui/react-popover";
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart } from "lucide-react";
+import { Checkbox } from "@radix-ui/react-checkbox";
+import { Heart, ChevronDown, Check } from "lucide-react";
 import Sidebar from "@/components/ui/sidebar";
+import { useEffect, useState } from "react";
 
 // Fake data for recipes (replace with real data later)
 const fakeRecipes = Array.from({ length: 15 }, (_, index) => ({
@@ -19,7 +19,56 @@ const fakeRecipes = Array.from({ length: 15 }, (_, index) => ({
   image: "/path/to/recipe-image.jpg", // Replace with actual image path
 }));
 
+interface Ingredient {
+  id: string;
+  name: string;
+  amount: string;
+}
+
 export default function SearchRecipes() {
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
+  const [mealType, setMealType] = useState<string>("");
+  const [dietaryRequirements, setDietaryRequirements] = useState<string>("");
+
+  const userId = "3e7a22e8-f0d8-4fbd-9e08-a7b9a8677bf7"; // Temp hardcoded user
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
+
+  const fetchFridge = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/fridge/${userId}`);
+      if (!response.ok) throw new Error("Failed to fetch ingredients");
+
+      const data = await response.json();
+      setIngredients(data.ingredients);
+    } catch (error) {
+      console.error("Error fetching ingredients:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchFridge();
+  }, []);
+
+  const toggleIngredient = (ingredientName: string) => {
+    setSelectedIngredients(
+      (prev) =>
+        prev.includes(ingredientName)
+          ? prev.filter((name) => name !== ingredientName) // remove if already selected
+          : [...prev, ingredientName] // add if not already selected
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIngredients.length === ingredients.length) {
+      // if all ingredients are selected, clear the selection.
+      setSelectedIngredients([]);
+    } else {
+      // selected ingredients = the list of ingredients from fetchFridge()
+      setSelectedIngredients(ingredients.map((ingredient) => ingredient.name));
+    }
+  };
+
   return (
     <div className="flex">
       <Sidebar />
@@ -28,38 +77,126 @@ export default function SearchRecipes() {
         <h1 className="text-3xl font-bold mb-6">Search Recipes</h1>
 
         <div className="flex gap-4 mb-8 items-center">
-          {/* Ingredients Search Bar */}
-          <Input placeholder="Enter ingredients" className="w-1/3 p-3" />
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-1/4 flex justify-between items-center"
+              >
+                {selectedIngredients.length === ingredients.length
+                  ? "All Selected"
+                  : selectedIngredients.length > 0
+                    ? `${selectedIngredients.length} Selected`
+                    : "My Fridge"}
 
-          <Select>
-            <SelectTrigger className="w-1/4">
-              <Button variant="outline" className="w-full">
-                Meal Type
+                <ChevronDown className="w-4 h-4 ml-2" />
               </Button>
-            </SelectTrigger>
-            <SelectContent className="w-full">
-              <SelectItem value="breakfast">Breakfast</SelectItem>
-              <SelectItem value="lunch">Lunch</SelectItem>
-              <SelectItem value="dinner">Dinner</SelectItem>
-              <SelectItem value="dessert">Dessert</SelectItem>
-              <SelectItem value="snack">Snack</SelectItem>
-            </SelectContent>
-          </Select>
+            </PopoverTrigger>
+            <PopoverContent className="w-64 bg-white p-2 rounded shadow-md">
+              <div
+                className="flex items-center gap-2 p-2 border-b cursor-pointer"
+                onClick={toggleSelectAll}
+              >
+                <Checkbox
+                  checked={selectedIngredients.length === ingredients.length}
+                />
+                <span>Select All</span>
+              </div>
+              {ingredients.length > 0 ? (
+                ingredients.map((ingredient) => (
+                  <div
+                    key={ingredient.id}
+                    className="flex items-center justify-between gap-2 p-2 cursor-pointer"
+                    onClick={() => toggleIngredient(ingredient.name)}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        checked={selectedIngredients.includes(ingredient.name)}
+                      />
+                      <span className="flex justify-between w-full">
+                        <span>{ingredient.name}</span>
+                        <span className="text-sm text-gray-500 ml-2 italic">
+                          {ingredient.amount}
+                        </span>
+                      </span>
+                    </div>
 
-          <Select>
-            <SelectTrigger className="w-1/4">
-              <Button variant="outline" className="w-full">
-                Dietary Requirements
+                    {selectedIngredients.includes(ingredient.name) && (
+                      <Check className="w-4 h-4 text-gray-800" />
+                    )}
+                  </div>
+                ))
+              ) : (
+                <div className="p-2 text-gray-500">No ingredients found</div>
+              )}
+            </PopoverContent>
+          </Popover>
+
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-1/4 flex justify-between items-center"
+              >
+                {mealType || "Meal Type"}
+                <ChevronDown className="w-4 h-4 ml-2" />
               </Button>
-            </SelectTrigger>
-            <SelectContent className="w-full">
-              <SelectItem value="vegetarian">Vegetarian</SelectItem>
-              <SelectItem value="vegan">Vegan</SelectItem>
-              <SelectItem value="gluten-free">Gluten-Free</SelectItem>
-              <SelectItem value="dairy-free">Dairy-Free</SelectItem>
-              <SelectItem value="keto">Keto</SelectItem>
-            </SelectContent>
-          </Select>
+            </PopoverTrigger>
+            <PopoverContent className="w-48 bg-white p-2 rounded shadow-md">
+              {[
+                "No Preference",
+                "Breakfast",
+                "Lunch",
+                "Dinner",
+                "Dessert",
+                "Snack",
+              ].map((meal) => (
+                <div
+                  key={meal}
+                  className="p-2 cursor-pointer flex items-center justify-between rounded hover:bg-gray-100"
+                  onClick={() => setMealType(meal)}
+                >
+                  <span>{meal}</span>
+                  {mealType === meal && (
+                    <Check className="w-4 h-4 text-gray-800" />
+                  )}
+                </div>
+              ))}
+            </PopoverContent>
+          </Popover>
+
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-1/4 flex justify-between items-center"
+              >
+                {dietaryRequirements || "Dietary Requirements"}
+                <ChevronDown className="w-4 h-4 ml-2" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-48 bg-white p-2 rounded shadow-md">
+              {[
+                "No Preference",
+                "Vegetarian",
+                "Vegan",
+                "Gluten-Free",
+                "Dairy-Free",
+                "Keto",
+              ].map((diet) => (
+                <div
+                  key={diet}
+                  className="p-2 cursor-pointer flex items-center justify-between rounded hover:bg-gray-100"
+                  onClick={() => setDietaryRequirements(diet)}
+                >
+                  <span>{diet}</span>
+                  {dietaryRequirements === diet && (
+                    <Check className="w-4 h-4 text-gray-800" />
+                  )}
+                </div>
+              ))}
+            </PopoverContent>
+          </Popover>
 
           {/* Search Button (No functionality for now) */}
           <Button className="w-1/4 p-3">Search Recipes</Button>

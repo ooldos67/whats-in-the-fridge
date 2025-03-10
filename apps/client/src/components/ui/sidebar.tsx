@@ -8,11 +8,11 @@ export default function Sidebar() {
 
   return (
     <div className="w-64 min-h-screen bg-orange-300 text-white flex flex-col">
-      <div className="p-6 text-2xl font-semibold border-b border-gray-600">
-        What's in The Fridge
-      </div>
+      <div className="p-6 text-2xl font-semibold text-center">W(i)TF?</div>
 
-      <div className="flex flex-col gap-4 mt-8 px-6">
+      <Separator className="my-6  border-gray-600" />
+
+      <div className="flex flex-col gap-4 px-6">
         <Button
           variant="link"
           className="text-white text-lg"
@@ -43,7 +43,7 @@ export default function Sidebar() {
         </Button>
       </div>
 
-      <Separator className="my-6 mx-6 border-gray-600" />
+      <Separator className="my-6  border-gray-600" />
 
       <div className="mt-auto flex items-center px-6 py-4">
         <Avatar className="w-12 h-12">
