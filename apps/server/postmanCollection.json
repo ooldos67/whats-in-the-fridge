@@ -100,6 +100,71 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "Get All Recipes",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{url}}/recipes",
+          "protocol": "http",
+          "host": ["{{url}}"],
+          "path": ["recipes"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Recipe by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{url}}/recipes/{{recipeId}}",
+          "protocol": "http",
+          "host": ["{{url}}"],
+          "path": ["recipes", "{{recipeId}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Save Recipe",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"userId\": \"{{userId}}\", \"title\": \"Banana Pancakes\", \"ingredients\": [\"Banana\", \"Oats\", \"Milk\"], \"method\": \"Mash bananas, mix with oats, cook on pan...\", \"mealType\": \"Breakfast\", \"dietaryRequirements\": \"Vegan\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/recipes",
+          "protocol": "http",
+          "host": ["{{url}}"],
+          "path": ["recipes"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Recipe",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{url}}/recipes/{{recipeId}}",
+          "protocol": "http",
+          "host": ["{{url}}"],
+          "path": ["recipes", "{{recipeId}}"]
+        }
+      },
+      "response": []
     }
   ]
 }

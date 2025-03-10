@@ -9,7 +9,6 @@ import { Checkbox } from "@radix-ui/react-checkbox";
 import { Heart, ChevronDown, Check } from "lucide-react";
 import Sidebar from "@/components/ui/sidebar";
 import { useEffect, useState } from "react";
-import { openai } from "openai";
 
 // Fake data for recipes (replace with real data later)
 const fakeRecipes = Array.from({ length: 15 }, (_, index) => ({
@@ -26,9 +25,6 @@ interface Ingredient {
   amount: string;
 }
 
-const OPEN_AI = import.meta.env.OPENAI_API_KEY;
-console.log(OPEN_AI);
-
 export default function SearchRecipes() {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [selectedIngredients, setSelectedIngredients] = useState<Ingredient[]>(
@@ -36,15 +32,7 @@ export default function SearchRecipes() {
   );
   const [mealType, setMealType] = useState<string>("");
   const [dietaryRequirements, setDietaryRequirements] = useState<string>("");
-  const [recipeSearchCriteria, setRecipeSearchCriteria] = useState<{
-    ingredients: Ingredient[];
-    mealType: string;
-    dietaryRequirements: string;
-  }>({
-    ingredients: [],
-    mealType: "",
-    dietaryRequirements: "",
-  });
+  // const [generatedRecipe, setGeneratedRecipe] = useState<string>("");
 
   const userId = "3e7a22e8-f0d8-4fbd-9e08-a7b9a8677bf7"; // Temp hardcoded user
   const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -56,7 +44,7 @@ export default function SearchRecipes() {
 
       const data = await response.json();
       setIngredients(data.ingredients);
-      console.log(ingredients);
+      console.log(data.ingredients);
     } catch (error) {
       console.error("Error fetching ingredients:", error);
     }
@@ -82,26 +70,35 @@ export default function SearchRecipes() {
 
   const toggleSelectAll = () => {
     if (selectedIngredients.length === ingredients.length) {
-      // if all ingredients are selected, clear the selection.
       setSelectedIngredients([]);
     } else {
-      // selected ingredients = the list of ingredients from fetchFridge()
       setSelectedIngredients(ingredients);
     }
   };
 
-  const handleSearchSubmit = () => {
-    setRecipeSearchCriteria({
-      ingredients: selectedIngredients,
-      mealType,
-      dietaryRequirements,
-    });
-
+  const handleSearchSubmit = async () => {
     console.log("Saved search criteria:", {
       ingredients: selectedIngredients,
       mealType,
       dietaryRequirements,
     });
+
+    //   const prompt = generateRecipePrompt(
+    //     selectedIngredients,
+    //     mealType || "",
+    //     dietaryRequirements || ""
+    //   );
+    // };
+
+    // const generateRecipePrompt = (
+    //   ingredients: Ingredient[],
+    //   mealType: string,
+    //   dietaryRequirements: string
+    // ) => {
+    //   const ingredientsList = ingredients
+    //     .map((ingredient) => `${ingredient.name} (amount: ${ingredient.amount})`)
+    //     .join(", ");
+    //   return `Create a recipe with the following ingredients: ${ingredientsList}. It should be a ${mealType} dish and be suitable for a ${dietaryRequirements} diet.`;
   };
 
   return (

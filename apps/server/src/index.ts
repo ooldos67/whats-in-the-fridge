@@ -3,6 +3,7 @@ import morgan from 'morgan'
 import cors from 'cors'
 import usersController from './controllers/userController'
 import fridgeController from './controllers/fridgeController'
+import recipeController from './controllers/recipeController'
 
 const app = express()
 
@@ -16,6 +17,10 @@ app.get('/user/:userId', usersController.getUser)
 app.get('/fridge/:userId', fridgeController.getFridge)
 app.post('/fridge/:userId/ingredient', fridgeController.addIngredient)
 app.delete('/fridge/:userId/ingredient', fridgeController.removeIngredient)
+
+app.get('/recipes/:id?', recipeController.getSavedRecipes)
+app.post('/recipes', recipeController.saveRecipe)
+app.delete('/recipes/:id', recipeController.removeRecipe)
 
 const PORT = 8080
 app.listen(PORT, () => {
