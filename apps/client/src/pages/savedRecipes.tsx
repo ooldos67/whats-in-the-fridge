@@ -2,17 +2,47 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Sidebar from "@/components/ui/sidebar";
 import { Heart } from "lucide-react";
+import { useEffect, useState } from "react";
+
+interface Recipe {
+  id: string;
+  title: string;
+  ingredients: string[];
+  mealType: string;
+  dietaryRequirements: string;
+  image?: string;
+}
 
 // Fake saved recipes
-const savedRecipes = Array.from({ length: 10 }, (_, index) => ({
-  title: `Saved Recipe ${index + 1}`,
-  ingredients: "Tomatoes, Cheese, Basil",
-  mealType: "Dinner",
-  dietary: "Vegan",
-  image: "/path/to/recipe-image.jpg", // Replace with actual image path
-}));
+// const savedRecipes = Array.from({ length: 10 }, (_, index) => ({
+//   title: `Saved Recipe ${index + 1}`,
+//   ingredients: "Tomatoes, Cheese, Basil",
+//   mealType: "Dinner",
+//   dietary: "Vegan",
+//   image: "/path/to/recipe-image.jpg", // Replace with actual image path
+// }));
+
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export default function SavedRecipes() {
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+
+  const fetchRecipes = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/recipes`);
+      if (!response.ok) throw new Error("Failed to fetch recipes");
+
+      const data = await response.json();
+      setRecipes(data);
+    } catch (error) {
+      console.error("Error fetching recipes: ", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchRecipes();
+  }, []);
+
   return (
     <div className="flex">
       <Sidebar />
@@ -21,13 +51,13 @@ export default function SavedRecipes() {
         <h1 className="text-3xl font-bold mb-6">Saved Recipes</h1>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {savedRecipes.length > 0 ? (
-            savedRecipes.map((recipe, index) => (
-              <Card key={index} className="max-w-sm bg-white shadow-md">
+          {recipes.length > 0 ? (
+            recipes.map((recipe) => (
+              <Card key={recipe.id} className="max-w-sm bg-white shadow-md">
                 <CardContent>
                   <div className="w-full h-48 bg-gray-200 mb-4">
                     <img
-                      src={recipe.image}
+                      src={recipe.image || "/path/to/default-image.jpg"} // Fallback if no image
                       alt={recipe.title}
                       className="w-full h-full object-cover"
                     />
@@ -41,13 +71,14 @@ export default function SavedRecipes() {
                   </div>
 
                   <p className="text-sm text-gray-600 mb-2">
-                    Ingredients: {recipe.ingredients}
+                    <strong>Ingredients:</strong>{" "}
+                    {recipe.ingredients.join(", ")}
                   </p>
                   <p className="text-sm text-gray-600 mb-2">
-                    Meal Type: {recipe.mealType}
+                    <strong>Meal Type:</strong> {recipe.mealType}
                   </p>
                   <p className="text-sm text-gray-600">
-                    Dietary: {recipe.dietary}
+                    <strong>Dietary:</strong> {recipe.dietaryRequirements}
                   </p>
                 </CardContent>
               </Card>
