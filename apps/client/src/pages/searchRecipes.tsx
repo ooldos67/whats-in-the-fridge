@@ -16,7 +16,7 @@ const fakeRecipes = Array.from({ length: 15 }, (_, index) => ({
   ingredients: "Tomatoes, Cheese, Basil",
   mealType: "Lunch",
   dietary: "Vegetarian",
-  image: "/path/to/recipe-image.jpg", // Replace with actual image path
+  image: "/path/to/recipe-image.jpg", // fake image path
 }));
 
 interface Ingredient {
@@ -232,7 +232,6 @@ export default function SearchRecipes() {
             </PopoverContent>
           </Popover>
 
-          {/* Search Button (No functionality for now) */}
           <Button
             onClick={handleSearchSubmit}
             className="w-1/4 p-3 transition-colors hover:scale-105 hover:cursor-pointer"

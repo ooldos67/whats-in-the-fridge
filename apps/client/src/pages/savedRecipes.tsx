@@ -13,15 +13,6 @@ interface Recipe {
   image?: string;
 }
 
-// Fake saved recipes
-// const savedRecipes = Array.from({ length: 10 }, (_, index) => ({
-//   title: `Saved Recipe ${index + 1}`,
-//   ingredients: "Tomatoes, Cheese, Basil",
-//   mealType: "Dinner",
-//   dietary: "Vegan",
-//   image: "/path/to/recipe-image.jpg", // Replace with actual image path
-// }));
-
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export default function SavedRecipes() {

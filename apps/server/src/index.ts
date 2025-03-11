@@ -22,6 +22,8 @@ app.get('/recipes/:id?', recipeController.getSavedRecipes)
 app.post('/recipes', recipeController.saveRecipe)
 app.delete('/recipes/:id', recipeController.removeRecipe)
 
+app.post('/ai-recipe', recipeController.createRecipe)
+
 const PORT = 8080
 app.listen(PORT, () => {
   console.log(`🔥 Server is running at <http://localhost>:${PORT}`)

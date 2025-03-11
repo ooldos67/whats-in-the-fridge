@@ -27,7 +27,6 @@ export default function MyFridge() {
   const userId = "3e7a22e8-f0d8-4fbd-9e08-a7b9a8677bf7"; // temp hardcoded user
   const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-  // Fetch ingredients from the backend on component mount
   const fetchFridge = async () => {
     try {
       const response = await fetch(`${BASE_URL}/fridge/${userId}`);
@@ -97,7 +96,6 @@ export default function MyFridge() {
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar */}
       <Sidebar />
 
       <div className="flex-1 p-8 overflow-y-auto h-screen">

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import recipeModel from '../models/recipeModel'
+import { completion } from '../services/recipeService'
 
 const recipeController = {
   async getSavedRecipes(req: Request, res: Response): Promise<void> {
@@ -72,6 +73,16 @@ const recipeController = {
       res
         .status(500)
         .json({ message: 'An error occurred while deleting the recipe.' })
+    }
+  },
+
+  async createRecipe(_req: Request, res: Response): Promise<void> {
+    try {
+      await completion()
+      res.send()
+    } catch (error) {
+      console.error(error)
+      res.status(400).send()
     }
   },
 }
