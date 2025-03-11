@@ -1,22 +1,24 @@
 import { config } from 'dotenv'
 import OpenAI from 'openai'
 
+config()
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
-config()
-
-export async function completion() {
-  const completion = await openai.chat.completions.create({
+export async function completion(prompt: string) {
+  const stream = await openai.chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
       {
         role: 'user',
-        content: 'Feeling stuck? Send a message to help@mycompany.com.',
+        content: prompt,
       },
     ],
+    stream: true,
   })
-
-  console.log(completion.choices[0].message.content)
+  for await (const chunk of stream) {
+    process.stdout.write(chunk.choices[0]?.delta?.content || '')
+  }
 }

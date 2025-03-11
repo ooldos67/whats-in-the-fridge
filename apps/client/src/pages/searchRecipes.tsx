@@ -32,7 +32,7 @@ export default function SearchRecipes() {
   );
   const [mealType, setMealType] = useState<string>("");
   const [dietaryRequirements, setDietaryRequirements] = useState<string>("");
-  // const [generatedRecipe, setGeneratedRecipe] = useState<string>("");
+  const [generatedRecipe, setGeneratedRecipe] = useState<string>("");
 
   const userId = "3e7a22e8-f0d8-4fbd-9e08-a7b9a8677bf7"; // Temp hardcoded user
   const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -83,22 +83,52 @@ export default function SearchRecipes() {
       dietaryRequirements,
     });
 
-    //   const prompt = generateRecipePrompt(
-    //     selectedIngredients,
-    //     mealType || "",
-    //     dietaryRequirements || ""
-    //   );
-    // };
+    function createPrompt() {
+      const ingredientList = selectedIngredients
+        .map(
+          (ingredient) => `${ingredient.name} (amount: ${ingredient.amount})`
+        )
+        .join(", ");
 
-    // const generateRecipePrompt = (
-    //   ingredients: Ingredient[],
-    //   mealType: string,
-    //   dietaryRequirements: string
-    // ) => {
-    //   const ingredientsList = ingredients
-    //     .map((ingredient) => `${ingredient.name} (amount: ${ingredient.amount})`)
-    //     .join(", ");
-    //   return `Create a recipe with the following ingredients: ${ingredientsList}. It should be a ${mealType} dish and be suitable for a ${dietaryRequirements} diet.`;
+      const meal =
+        mealType && mealType !== "No Preference" ? mealType : "any time of day";
+
+      const diet =
+        dietaryRequirements && dietaryRequirements !== "No Preference"
+          ? dietaryRequirements
+          : "any";
+
+      let prompt = `Can you give me a tasty recipe. I have these ingredients available: ${ingredientList}. The recipes does not need to use all of the ingredients. The meal type is ${meal} and it should be suitable for people on ${diet} diet. I would like only the recipe title, list of ingredients I need for the recipe, Meal type, and the diet in JSON format.`;
+
+      if (dietaryRequirements && dietaryRequirements !== "No Preference") {
+        prompt += ` The recipe should be ${dietaryRequirements.toLowerCase()}.`;
+      }
+
+      return prompt;
+    }
+
+    // send request to openAI to render recipes with search parameters.
+    async function generateRecipe() {
+      try {
+        const response = await fetch(`${BASE_URL}/ai-recipe`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ prompt: createPrompt() }),
+        });
+
+        if (!response.ok) throw new Error("Failed to generate recipe");
+
+        const data = await response.json();
+        setGeneratedRecipe(data);
+        console.log(data);
+      } catch (error) {
+        console.error("Error generating recipe:", error);
+      }
+    }
+
+    generateRecipe();
   };
 
   return (
@@ -241,7 +271,7 @@ export default function SearchRecipes() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {fakeRecipes.map((recipe, index) => (
+          {/* {fakeRecipes.map((recipe, index) => (
             <Card key={index} className="max-w-sm bg-white shadow-md">
               <CardContent>
                 <div className="w-full h-48 bg-gray-200 mb-4">
@@ -268,7 +298,7 @@ export default function SearchRecipes() {
                 </p>
               </CardContent>
             </Card>
-          ))}
+          ))} */}
         </div>
       </div>
     </div>

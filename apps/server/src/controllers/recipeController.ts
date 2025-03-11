@@ -76,13 +76,18 @@ const recipeController = {
     }
   },
 
-  async createRecipe(_req: Request, res: Response): Promise<void> {
+  async createRecipe(req: Request, res: Response): Promise<void> {
     try {
-      await completion()
-      res.send()
+      const { prompt } = req.body
+
+      if (!prompt) throw new Error('Missing prompt')
+
+      const recipe = await completion(prompt)
+
+      res.status(200).json({ recipe })
     } catch (error) {
       console.error(error)
-      res.status(400).send()
+      res.status(500).json({ error: 'Failed to generate recipe' })
     }
   },
 }
