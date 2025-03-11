@@ -70,15 +70,18 @@ export function Dashboard() {
 
         <Card className="p-4 md:col-span-1">
           <CardHeader>
-            <CardTitle>Share Recipes</CardTitle>
+            <CardTitle>Scan Your Fridge</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>Inspire others by sharing your favorite meals!</p>
+            <p>
+              Take picture of youre phone and let AI create a list of
+              ingredients for you!
+            </p>
             <Button
               variant="outline"
               className="mt-4 transition-colors hover:scale-105 hover:cursor-pointer"
             >
-              Explore
+              Take Picture
             </Button>
           </CardContent>
         </Card>

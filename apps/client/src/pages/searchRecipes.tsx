@@ -233,7 +233,10 @@ export default function SearchRecipes() {
           </Popover>
 
           {/* Search Button (No functionality for now) */}
-          <Button onClick={handleSearchSubmit} className="w-1/4 p-3">
+          <Button
+            onClick={handleSearchSubmit}
+            className="w-1/4 p-3 transition-colors hover:scale-105 hover:cursor-pointer"
+          >
             Search Recipes
           </Button>
         </div>

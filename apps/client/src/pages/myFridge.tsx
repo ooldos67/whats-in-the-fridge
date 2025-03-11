@@ -114,7 +114,12 @@ export default function MyFridge() {
             value={ingredientAmount}
             onChange={(e) => setIngredientAmount(e.target.value)}
           />
-          <Button type="submit">Add</Button>
+          <Button
+            type="submit"
+            className="transition-colors hover:scale-105 hover:cursor-pointer"
+          >
+            Add
+          </Button>
         </form>
 
         <Card>
@@ -134,8 +139,11 @@ export default function MyFridge() {
                       <TableCell>{ingredient.name}</TableCell>
                       <TableCell>{ingredient.amount}</TableCell>
                       <TableCell>
-                        <Button onClick={() => deleteIngredient(ingredient.id)}>
-                          <Trash className="w-5 h-5 text-red-500" />
+                        <Button
+                          onClick={() => deleteIngredient(ingredient.id)}
+                          className="transition-colors hover:scale-105 hover:cursor-pointer"
+                        >
+                          <Trash className="w-5 h-5 text-white" />
                         </Button>
                       </TableCell>
                     </TableRow>

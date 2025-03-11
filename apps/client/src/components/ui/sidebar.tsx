@@ -48,7 +48,7 @@ export default function Sidebar() {
       <div className="mt-auto flex items-center px-6 py-4">
         <Avatar className="w-12 h-12">
           <AvatarImage src="/path/to/profile-image.jpg" alt="User Profile" />
-          <AvatarFallback>U</AvatarFallback>
+          <AvatarFallback>DW</AvatarFallback>
         </Avatar>
         <div className="ml-3">
           <p className="text-sm font-semibold">Dom Wooldridge</p>
