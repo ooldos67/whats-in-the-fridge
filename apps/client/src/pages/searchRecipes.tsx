@@ -10,15 +10,6 @@ import { Heart, ChevronDown, Check } from "lucide-react";
 import Sidebar from "@/components/ui/sidebar";
 import { useEffect, useState } from "react";
 
-// Fake data for recipes (replace with real data later)
-// const fakeRecipes = Array.from({ length: 15 }, (_, index) => ({
-//   title: `Recipe ${index + 1}`,
-//   ingredients: "Tomatoes, Cheese, Basil",
-//   mealType: "Lunch",
-//   dietary: "Vegetarian",
-//   image: "/path/to/recipe-image.jpg", // fake image path
-// }));
-
 interface Ingredient {
   id: string;
   name: string;
@@ -98,7 +89,7 @@ export default function SearchRecipes() {
           ? dietaryRequirements
           : "any";
 
-      let prompt = `Can you give me a tasty realistic recipe. I have these ingredients available: ${ingredientList}, but I can use or buy more if needed. The recipes does not need to use all of the ingredients. The meal type is ${meal} and it should be suitable for people on ${diet} diet. I would like only the recipe title, list of ingredients I need for the recipe, Meal type, and the diet.`;
+      let prompt = `Can you give me a tasty realistic recipe. I have these ingredients available: ${ingredientList}, but I can use or buy more if needed. The recipes does not need to use all of the ingredients if it will make the food bad. The meal type is ${meal} and it should be suitable for people on ${diet} diet. I would like only the recipe title, list of ingredients I need for the recipe, Meal type, and the diet.`;
 
       if (dietaryRequirements && dietaryRequirements !== "No Preference") {
         prompt += ` The recipe should be ${dietaryRequirements.toLowerCase()}.`;
@@ -272,7 +263,7 @@ export default function SearchRecipes() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {generatedRecipes.length > 0 ? (
-            generatedRecipes.map((recipe, index) => (
+            generatedRecipes.map((recipe, index: number) => (
               <Card key={index} className="max-w-sm bg-white shadow-md">
                 <CardContent>
                   <div className="w-full h-48 bg-gray-200 mb-4">

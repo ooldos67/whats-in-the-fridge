@@ -42,7 +42,7 @@ model SavedRecipe {
   userId              String
   title               String
   ingredients         String[]
-  method              String
+  method              String?
   mealType            String
   dietaryRequirements String
 }

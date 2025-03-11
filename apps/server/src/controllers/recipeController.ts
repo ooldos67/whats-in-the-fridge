@@ -32,7 +32,7 @@ const recipeController = {
         dietaryRequirements,
       } = req.body
 
-      if (!userId || !title || !ingredients || !method) {
+      if (!userId || !title || !ingredients) {
         res.status(400).json({ error: 'Missing required fields' })
         return
       }

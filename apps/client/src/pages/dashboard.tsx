@@ -85,16 +85,6 @@ export function Dashboard() {
             </Button>
           </CardContent>
         </Card>
-
-        {/* <button
-          onClick={() => {
-            fetch("http://localhost:8080/ai-recipe", {
-              method: "POST",
-            });
-          }}
-        >
-          TEST
-        </button> */}
       </div>
     </div>
   );
