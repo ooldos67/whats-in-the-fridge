@@ -11,18 +11,26 @@ import Sidebar from "@/components/ui/sidebar";
 import { useEffect, useState } from "react";
 
 // Fake data for recipes (replace with real data later)
-const fakeRecipes = Array.from({ length: 15 }, (_, index) => ({
-  title: `Recipe ${index + 1}`,
-  ingredients: "Tomatoes, Cheese, Basil",
-  mealType: "Lunch",
-  dietary: "Vegetarian",
-  image: "/path/to/recipe-image.jpg", // fake image path
-}));
+// const fakeRecipes = Array.from({ length: 15 }, (_, index) => ({
+//   title: `Recipe ${index + 1}`,
+//   ingredients: "Tomatoes, Cheese, Basil",
+//   mealType: "Lunch",
+//   dietary: "Vegetarian",
+//   image: "/path/to/recipe-image.jpg", // fake image path
+// }));
 
 interface Ingredient {
   id: string;
   name: string;
   amount: string;
+}
+
+interface Recipe {
+  recipeTitle: string;
+  ingredients: string[];
+  mealType: string;
+  diet: string;
+  image?: string;
 }
 
 export default function SearchRecipes() {
@@ -32,7 +40,7 @@ export default function SearchRecipes() {
   );
   const [mealType, setMealType] = useState<string>("");
   const [dietaryRequirements, setDietaryRequirements] = useState<string>("");
-  const [generatedRecipe, setGeneratedRecipe] = useState<string>("");
+  const [generatedRecipes, setGeneratedRecipes] = useState<string>("");
 
   const userId = "3e7a22e8-f0d8-4fbd-9e08-a7b9a8677bf7"; // Temp hardcoded user
   const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -77,17 +85,9 @@ export default function SearchRecipes() {
   };
 
   const handleSearchSubmit = async () => {
-    console.log("Saved search criteria:", {
-      ingredients: selectedIngredients,
-      mealType,
-      dietaryRequirements,
-    });
-
     function createPrompt() {
       const ingredientList = selectedIngredients
-        .map(
-          (ingredient) => `${ingredient.name} (amount: ${ingredient.amount})`
-        )
+        .map(({ name, amount }) => `${name} (amount: ${amount})`)
         .join(", ");
 
       const meal =
@@ -98,7 +98,7 @@ export default function SearchRecipes() {
           ? dietaryRequirements
           : "any";
 
-      let prompt = `Can you give me a tasty recipe. I have these ingredients available: ${ingredientList}. The recipes does not need to use all of the ingredients. The meal type is ${meal} and it should be suitable for people on ${diet} diet. I would like only the recipe title, list of ingredients I need for the recipe, Meal type, and the diet in JSON format.`;
+      let prompt = `Can you give me a tasty realistic recipe. I have these ingredients available: ${ingredientList}, but I can use or buy more if needed. The recipes does not need to use all of the ingredients. The meal type is ${meal} and it should be suitable for people on ${diet} diet. I would like only the recipe title, list of ingredients I need for the recipe, Meal type, and the diet.`;
 
       if (dietaryRequirements && dietaryRequirements !== "No Preference") {
         prompt += ` The recipe should be ${dietaryRequirements.toLowerCase()}.`;
@@ -121,7 +121,7 @@ export default function SearchRecipes() {
         if (!response.ok) throw new Error("Failed to generate recipe");
 
         const data = await response.json();
-        setGeneratedRecipe(data);
+        setGeneratedRecipes(data);
         console.log(data);
       } catch (error) {
         console.error("Error generating recipe:", error);
@@ -271,34 +271,43 @@ export default function SearchRecipes() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {/* {fakeRecipes.map((recipe, index) => (
-            <Card key={index} className="max-w-sm bg-white shadow-md">
-              <CardContent>
-                <div className="w-full h-48 bg-gray-200 mb-4">
-                  <img
-                    src={recipe.image}
-                    alt={recipe.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-xl font-semibold">{recipe.title}</h3>
-                  <Button variant="ghost" size="icon">
-                    <Heart className="w-5 h-5 text-gray-500 hover:text-red-500 transition" />
-                  </Button>
-                </div>
-                <p className="text-sm text-gray-600 mb-2">
-                  Ingredients: {recipe.ingredients}
-                </p>
-                <p className="text-sm text-gray-600 mb-2">
-                  Meal Type: {recipe.mealType}
-                </p>
-                <p className="text-sm text-gray-600">
-                  Dietary: {recipe.dietary}
-                </p>
-              </CardContent>
-            </Card>
-          ))} */}
+          {generatedRecipes.length > 0 ? (
+            generatedRecipes.map((recipe, index) => (
+              <Card key={index} className="max-w-sm bg-white shadow-md">
+                <CardContent>
+                  <div className="w-full h-48 bg-gray-200 mb-4">
+                    <img
+                      src={recipe.image || "/path/to/recipe-image.jpg"}
+                      alt={recipe.recipeTitle}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="flex justify-between items-center mb-2">
+                    <h3 className="text-xl font-semibold">
+                      {recipe.recipeTitle}
+                    </h3>
+                    <Button variant="ghost" size="icon">
+                      <Heart className="w-5 h-5 text-gray-500 hover:text-red-500 transition" />
+                    </Button>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-2">
+                    <strong>Ingredients:</strong>{" "}
+                    {recipe.ingredients.join(", ")}
+                  </p>
+                  <p className="text-sm text-gray-600 mb-2">
+                    <strong>Meal Type:</strong> {recipe.mealType}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <strong>Dietary:</strong> {recipe.diet}
+                  </p>
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <p className="text-gray-500">
+              Add in your search filters to generate recipes...
+            </p>
+          )}
         </div>
       </div>
     </div>
