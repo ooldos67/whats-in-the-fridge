@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import recipeModel from '../models/recipeModel'
-import { completion } from '../services/recipeService'
+import { completion, recipeMethod } from '../services/recipeService'
 
 const recipeController = {
   async getSavedRecipes(req: Request, res: Response): Promise<void> {
@@ -88,6 +88,46 @@ const recipeController = {
     } catch (error) {
       console.error(error)
       res.status(500).json({ error: 'Failed to generate recipe' })
+    }
+  },
+
+  async createFullRecipe(req: Request, res: Response): Promise<void> {
+    try {
+      const { prompt } = req.body
+
+      if (!prompt) throw new Error('Missing prompt')
+
+      const method = await recipeMethod(prompt)
+
+      res.status(200).json({ method })
+    } catch (error) {
+      console.error(error)
+      res.status(500).json({ error: 'Failed to generate method' })
+    }
+  },
+
+  async updateRecipe(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params
+      const { method } = req.body
+
+      console.log('Updating recipe ID:', id)
+      console.log('New method:', method)
+
+      if (!id) {
+        res.status(400).json({ error: 'Recipe ID is required.' })
+        return
+      }
+
+      if (!method) {
+        res.status(400).json({ error: 'Method field is required for update.' })
+        return
+      }
+
+      const updatedRecipe = await recipeModel.put(id, { method })
+      res.json(updatedRecipe)
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to update recipe' })
     }
   },
 }

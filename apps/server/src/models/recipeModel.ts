@@ -52,6 +52,35 @@ const recipeModel = {
       throw new Error('Error deleting recipe.')
     }
   },
+
+  async put(recipeId: string, updatedData: { method?: string }) {
+    try {
+      console.log('Updating recipe with ID:', recipeId)
+      console.log('New method:', updatedData.method)
+
+      if (!recipeId) {
+        throw new Error('Recipe ID is missing')
+      }
+
+      const recipeExists = await prisma.savedRecipe.findUnique({
+        where: { id: recipeId },
+      })
+
+      if (!recipeExists) {
+        console.error('Recipe not found:', recipeId)
+        throw new Error('Recipe not found.')
+      }
+
+      const updatedRecipe = await prisma.savedRecipe.update({
+        where: { id: recipeId },
+        data: updatedData,
+      })
+      return updatedRecipe
+    } catch (error: any) {
+      console.error('Error updating recipe:', error)
+      throw new Error(error.message)
+    }
+  },
 }
 
 export default recipeModel

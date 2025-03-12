@@ -27,6 +27,10 @@ const RecipeSchema = z.object({
   ),
 })
 
+const MethodSchema = z.object({
+  method: z.string(),
+})
+
 // export async function completion(prompt: string) {
 //   const stream = await openai.chat.completions.create({
 //     model: 'gpt-4o-mini',
@@ -58,5 +62,22 @@ export async function completion(prompt: string) {
   } catch (error) {
     console.error('Error calling OpenAI API:', error)
     return { recipes: [] }
+  }
+}
+
+export async function recipeMethod(prompt: string) {
+  try {
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [{ role: 'user', content: prompt }],
+      response_format: zodResponseFormat(MethodSchema, 'recipe'),
+    })
+
+    console.log('Raw OpenAI Response:', response.choices[0].message.content)
+
+    return response.choices[0].message.content
+  } catch (error) {
+    console.error('Error calling OpenAI API:', error)
+    return { method: [] }
   }
 }

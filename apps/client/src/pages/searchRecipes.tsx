@@ -6,7 +6,7 @@ import {
 } from "@radix-ui/react-popover";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@radix-ui/react-checkbox";
-import { Heart, ChevronDown, Check } from "lucide-react";
+import { Heart, ChevronDown, Check, X } from "lucide-react";
 import Sidebar from "@/components/ui/sidebar";
 import { useEffect, useState } from "react";
 
@@ -34,6 +34,7 @@ export default function SearchRecipes() {
   const [generatedRecipes, setGeneratedRecipes] = useState<Recipe[]>([]);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [savedRecipes, setSavedRecipes] = useState<string[]>([]);
+  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
 
   const userId = "3e7a22e8-f0d8-4fbd-9e08-a7b9a8677bf7"; // Temp hardcoded user
   const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -169,6 +170,10 @@ export default function SearchRecipes() {
     }
   };
 
+  const handleRecipeClick = (recipe: Recipe) => {
+    setSelectedRecipe(recipe);
+  };
+
   return (
     <div className="flex">
       <Sidebar />
@@ -176,7 +181,7 @@ export default function SearchRecipes() {
       <div className="flex-1 p-8 overflow-y-auto h-screen">
         <h1 className="text-3xl font-bold mb-6">Search Recipes</h1>
 
-        <div className="flex gap-4 mb-8 items-center">
+        <div className="flex gap-4 mb-6">
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -302,7 +307,7 @@ export default function SearchRecipes() {
 
           <Button
             onClick={handleSearchSubmit}
-            className="w-1/4 p-3 transition-colors hover:scale-105 hover:cursor-pointer"
+            className="transition-colors hover:scale-105 hover:cursor-pointer"
           >
             Search Recipes
           </Button>
@@ -313,7 +318,11 @@ export default function SearchRecipes() {
             generatedRecipes.map((recipe, index: number) => {
               const isSaved = savedRecipes.includes(recipe.recipeTitle);
               return (
-                <Card key={index} className="max-w-sm bg-white shadow-md">
+                <Card
+                  key={index}
+                  className="max-w-sm bg-white shadow-md"
+                  onClick={() => handleRecipeClick(recipe)}
+                >
                   <CardContent>
                     <div className="w-full h-48 bg-gray-200 mb-4">
                       <img
@@ -327,7 +336,10 @@ export default function SearchRecipes() {
                         {recipe.recipeTitle}
                       </h3>
                       <Button
-                        onClick={() => handleSaveRecipe(recipe, userId)}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleSaveRecipe(recipe, userId);
+                        }}
                         variant="ghost"
                         size="icon"
                       >
@@ -358,6 +370,33 @@ export default function SearchRecipes() {
             </p>
           )}
         </div>
+        {selectedRecipe && (
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center">
+            <div className="bg-white p-6 rounded-lg w-3/4 max-w-lg relative">
+              <button
+                className="absolute top-2 right-2 text-gray-600"
+                onClick={() => setSelectedRecipe(null)}
+              >
+                <X className="w-5 h-5 text-gray-600 hover:text-gray-900" />
+              </button>
+              <h2 className="text-2xl font-bold mb-4">
+                {selectedRecipe.recipeTitle}
+              </h2>
+              <p className="text-sm text-gray-600">
+                <strong>Meal Type:</strong> {selectedRecipe.mealType}
+              </p>
+              <p className="text-sm text-gray-600">
+                <strong>Diet:</strong> {selectedRecipe.diet}
+              </p>
+              <h3 className="text-lg font-semibold mt-4">Ingredients:</h3>
+              <ul className="list-disc ml-6">
+                {selectedRecipe.ingredients.map((ingredient, index) => (
+                  <li key={index}>{ingredient}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

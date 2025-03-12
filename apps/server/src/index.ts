@@ -21,8 +21,10 @@ app.delete('/fridge/:userId/ingredient', fridgeController.removeIngredient)
 app.get('/recipes/:id?', recipeController.getSavedRecipes)
 app.post('/recipes', recipeController.saveRecipe)
 app.delete('/recipes/:id', recipeController.removeRecipe)
+app.put('/recipes/:id', recipeController.updateRecipe)
 
 app.post('/ai-recipe', recipeController.createRecipe)
+app.post('/ai-recipe-method', recipeController.createFullRecipe)
 
 const PORT = 8080
 app.listen(PORT, () => {

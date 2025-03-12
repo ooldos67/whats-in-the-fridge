@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Sidebar from "@/components/ui/sidebar";
-import { Heart } from "lucide-react";
+import { Heart, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface Recipe {
@@ -10,6 +10,7 @@ interface Recipe {
   ingredients: string[];
   mealType: string;
   dietaryRequirements: string;
+  method?: string;
   image?: string;
 }
 
@@ -19,6 +20,7 @@ const userId = "3e7a22e8-f0d8-4fbd-9e08-a7b9a8677bf7"; // Temp hardcoded user
 export default function SavedRecipes() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [savedRecipes, setSavedRecipes] = useState<string[]>([]);
+  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
 
   const fetchRecipes = async () => {
     try {
@@ -72,6 +74,43 @@ export default function SavedRecipes() {
     }
   };
 
+  const handleRecipeClick = async (recipe: Recipe) => {
+    if (recipe.method) {
+      setSelectedRecipe(recipe);
+      return;
+    }
+    try {
+      const methodPrompt = `Generate a simple step-by-step cooking method for the following recipe: "${recipe.title}" with ingredients: ${recipe.ingredients.join(", ")}.`;
+
+      const aiResponse = await fetch(`${BASE_URL}/ai-recipe-method`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: methodPrompt }),
+      });
+
+      if (!aiResponse.ok) throw new Error("Failed to generate recipe method");
+
+      const data = await aiResponse.json();
+
+      const parsedData = JSON.parse(data.method).method;
+      console.log(parsedData);
+      const generatedMethod = parsedData;
+
+      const updateResponse = await fetch(`${BASE_URL}/recipes/${recipe.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ method: generatedMethod }),
+      });
+
+      if (!updateResponse.ok)
+        throw new Error("Failed to update recipe in database");
+
+      setSelectedRecipe({ ...recipe, method: generatedMethod });
+    } catch (error) {
+      console.error("Error handling recipe click:", error);
+    }
+  };
+
   return (
     <div className="flex">
       <Sidebar />
@@ -84,7 +123,11 @@ export default function SavedRecipes() {
             recipes.map((recipe) => {
               const isSaved = savedRecipes.includes(recipe.id);
               return (
-                <Card key={recipe.id} className="max-w-sm bg-white shadow-md">
+                <Card
+                  key={recipe.id}
+                  className="max-w-sm bg-white shadow-md"
+                  onClick={() => handleRecipeClick(recipe)}
+                >
                   <CardContent>
                     <div className="w-full h-48 bg-gray-200 mb-4">
                       <img
@@ -99,7 +142,10 @@ export default function SavedRecipes() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleSavedRecipes(recipe, userId)}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleSavedRecipes(recipe, userId);
+                        }}
                       >
                         <Heart
                           className={`w-5 h-5 transition ${
@@ -127,6 +173,35 @@ export default function SavedRecipes() {
             <p className="text-gray-500 text-lg">No saved recipes yet.</p>
           )}
         </div>
+        {selectedRecipe && (
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-white p-6 rounded-lg w-full max-w-lg max-h-[80vh] overflow-y-auto relative">
+              <button
+                className="absolute top-2 right-2 text-gray-600"
+                onClick={() => setSelectedRecipe(null)}
+              >
+                <X className="w-5 h-5 text-gray-600 hover:text-gray-900" />
+              </button>
+              <h2 className="text-2xl font-bold mb-4">
+                {selectedRecipe.title}
+              </h2>
+              <p className="text-sm text-gray-600">
+                <strong>Meal Type:</strong> {selectedRecipe.mealType}
+              </p>
+              <p className="text-sm text-gray-600">
+                <strong>Diet:</strong> {selectedRecipe.dietaryRequirements}
+              </p>
+              <h3 className="text-lg font-semibold mt-4">Ingredients:</h3>
+              <ul className="list-disc ml-6">
+                {selectedRecipe.ingredients.map((ingredient, index) => (
+                  <li key={index}>{ingredient}</li>
+                ))}
+              </ul>
+              <h3 className="text-lg font-semibold mt-4">Method:</h3>
+              <p>{selectedRecipe.method}</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
