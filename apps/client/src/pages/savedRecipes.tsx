@@ -37,14 +37,6 @@ export default function SavedRecipes() {
     fetchRecipes();
   }, []);
 
-  // const toggleSaveRecipe = (id: string) => {
-  //   setSavedRecipes((prev) =>
-  //     prev.includes(id)
-  //       ? prev.filter((recipeId) => recipeId !== id)
-  //       : [...prev, id]
-  //   );
-  // };
-
   const handleSavedRecipes = async (recipe: Recipe, userId: string) => {
     const isCurrentlySaved = savedRecipes.includes(recipe.id);
     try {
