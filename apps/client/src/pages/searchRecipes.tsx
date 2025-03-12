@@ -31,7 +31,7 @@ export default function SearchRecipes() {
   );
   const [mealType, setMealType] = useState<string>("");
   const [dietaryRequirements, setDietaryRequirements] = useState<string>("");
-  const [generatedRecipes, setGeneratedRecipes] = useState<string>("");
+  const [generatedRecipes, setGeneratedRecipes] = useState<Recipe[]>([]);
 
   const userId = "3e7a22e8-f0d8-4fbd-9e08-a7b9a8677bf7"; // Temp hardcoded user
   const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -89,7 +89,7 @@ export default function SearchRecipes() {
           ? dietaryRequirements
           : "any";
 
-      let prompt = `Can you give me a tasty realistic recipe. I have these ingredients available: ${ingredientList}, but I can use or buy more if needed. The recipes does not need to use all of the ingredients if it will make the food bad. The meal type is ${meal} and it should be suitable for people on ${diet} diet. I would like only the recipe title, list of ingredients I need for the recipe, Meal type, and the diet.`;
+      let prompt = `Can you give me three tasty realistic recipes. I have these ingredients available: ${ingredientList}.The recipes should be delicious and practical, using available ingredients where possible. Additional ingredients can be used to enhance the dish. The meal type is ${meal} and it should be suitable for people on ${diet} diet. I would like only the recipe title, list of ingredients (leave out the quantities) I need for the recipe, Meal type, and the diet.`;
 
       if (dietaryRequirements && dietaryRequirements !== "No Preference") {
         prompt += ` The recipe should be ${dietaryRequirements.toLowerCase()}.`;
@@ -98,7 +98,6 @@ export default function SearchRecipes() {
       return prompt;
     }
 
-    // send request to openAI to render recipes with search parameters.
     async function generateRecipe() {
       try {
         const response = await fetch(`${BASE_URL}/ai-recipe`, {
@@ -112,8 +111,13 @@ export default function SearchRecipes() {
         if (!response.ok) throw new Error("Failed to generate recipe");
 
         const data = await response.json();
-        setGeneratedRecipes(data);
-        console.log(data);
+        console.log("API Response Data:", data);
+
+        const parsedData = JSON.parse(data.recipe).recipes;
+
+        console.log(parsedData);
+
+        setGeneratedRecipes(parsedData);
       } catch (error) {
         console.error("Error generating recipe:", error);
       }
@@ -262,7 +266,7 @@ export default function SearchRecipes() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {generatedRecipes.length > 0 ? (
+          {generatedRecipes?.length > 0 ? (
             generatedRecipes.map((recipe, index: number) => (
               <Card key={index} className="max-w-sm bg-white shadow-md">
                 <CardContent>
