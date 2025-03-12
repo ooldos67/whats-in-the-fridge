@@ -1,7 +1,7 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useNavigate } from "react-router-dom";
+import UserProfile from "./userProfile";
 
 export default function Sidebar() {
   const navigate = useNavigate();
@@ -45,15 +45,7 @@ export default function Sidebar() {
 
       <Separator className="my-6  border-gray-600" />
 
-      <div className="mt-auto flex items-center px-6 py-4">
-        <Avatar className="w-12 h-12">
-          <AvatarImage src="/path/to/profile-image.jpg" alt="User Profile" />
-          <AvatarFallback>DW</AvatarFallback>
-        </Avatar>
-        <div className="ml-3">
-          <p className="text-sm font-semibold">Dom Wooldridge</p>
-        </div>
-      </div>
+      <UserProfile />
     </div>
   );
 }

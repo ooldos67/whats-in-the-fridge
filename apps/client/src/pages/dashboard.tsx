@@ -1,13 +1,22 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import LoginButton from "@/components/ui/loginButton";
+import LogoutButton from "@/components/ui/logoutButton";
 
 export function Dashboard() {
   const navigate = useNavigate();
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gray-100">
-      <h1 className="text-3xl font-bold mb-6">What's in the Fridge?</h1>
+      <div className="flex justify-between items-center w-full max-w-5xl mb-6">
+        <h1 className="text-3xl font-bold">What's in the Fridge?</h1>
+
+        <div className="flex gap-2">
+          <LoginButton />
+          <LogoutButton />
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl">
         <Card className="p-4 md:col-span-1">
@@ -22,7 +31,7 @@ export function Dashboard() {
             </p>
             <Button
               variant="outline"
-              className="mt-4 transition-colors hover:scale-105 hover:cursor-pointer"
+              className="mt-4 border border-black transition-colors hover:scale-105 hover:cursor-pointer"
               onClick={() => navigate("/search-recipes")}
             >
               Explore
@@ -79,7 +88,7 @@ export function Dashboard() {
             </p>
             <Button
               variant="outline"
-              className="mt-4 transition-colors hover:scale-105 hover:cursor-pointer"
+              className="mt-4  border border-black transition-colors hover:scale-105 hover:cursor-pointer"
             >
               Take Picture
             </Button>
