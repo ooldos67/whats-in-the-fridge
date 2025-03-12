@@ -12,12 +12,25 @@ import {
 } from "@/components/ui/table";
 import { Trash } from "lucide-react";
 import { useEffect, useState } from "react";
+import { z } from "zod";
 
 interface Ingredient {
   id: string;
   name: string;
   amount: string;
 }
+
+const ingredientSchema = z.object({
+  ingredientName: z
+    .string()
+    .min(2, { message: "Ingredient name must be at least 2 characters." })
+    .max(50, { message: "Ingredient name must be under 20 characters." })
+    .regex(/^[a-zA-Z\s]+$/, { message: "Only letters and spaces allowed." }),
+  ingredientAmount: z
+    .string()
+    .min(1, { message: "Amount is required." })
+    .max(20, { message: "Amount too long." }),
+});
 
 export default function MyFridge() {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
@@ -42,8 +55,13 @@ export default function MyFridge() {
   const addIngredient = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!ingredientName || !ingredientAmount) {
-      alert("Please provide both ingredient name and amount.");
+    const result = ingredientSchema.safeParse({
+      ingredientName,
+      ingredientAmount,
+    });
+
+    if (!result.success) {
+      alert("Please provide a valid ingredient name and amount.");
       return;
     }
 

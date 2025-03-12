@@ -77,8 +77,11 @@ export default function SavedRecipes() {
 
   const handleRecipeClick = async (recipe: Recipe) => {
     try {
+      if (recipe.method) {
+        setSelectedRecipe(recipe);
+        return;
+      }
       setSelectedRecipe(recipe);
-      if (recipe.method) return;
       setIsLoadingMethod(true);
 
       const methodPrompt = `Generate a list of simple steps for the following recipe: "${recipe.title}" with ingredients: ${recipe.ingredients.join(", ")}.`;
