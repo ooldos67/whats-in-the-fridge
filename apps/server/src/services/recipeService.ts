@@ -56,8 +56,6 @@ export async function completion(prompt: string) {
       response_format: zodResponseFormat(RecipeSchema, 'recipes'),
     })
 
-    console.log('Raw OpenAI Response:', response.choices[0].message.content)
-
     return response.choices[0].message.content
   } catch (error) {
     console.error('Error calling OpenAI API:', error)
@@ -72,8 +70,6 @@ export async function recipeMethod(prompt: string) {
       messages: [{ role: 'user', content: prompt }],
       response_format: zodResponseFormat(MethodSchema, 'recipe'),
     })
-
-    console.log('Raw OpenAI Response:', response.choices[0].message.content)
 
     return response.choices[0].message.content
   } catch (error) {

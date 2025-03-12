@@ -21,6 +21,7 @@ export default function SavedRecipes() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [savedRecipes, setSavedRecipes] = useState<string[]>([]);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+  const [isLoadingMethod, setIsLoadingMethod] = useState(false);
 
   const fetchRecipes = async () => {
     try {
@@ -75,12 +76,12 @@ export default function SavedRecipes() {
   };
 
   const handleRecipeClick = async (recipe: Recipe) => {
-    if (recipe.method) {
-      setSelectedRecipe(recipe);
-      return;
-    }
     try {
-      const methodPrompt = `Generate a simple step-by-step cooking method for the following recipe: "${recipe.title}" with ingredients: ${recipe.ingredients.join(", ")}.`;
+      setSelectedRecipe(recipe);
+      if (recipe.method) return;
+      setIsLoadingMethod(true);
+
+      const methodPrompt = `Generate a list of simple steps for the following recipe: "${recipe.title}" with ingredients: ${recipe.ingredients.join(", ")}.`;
 
       const aiResponse = await fetch(`${BASE_URL}/ai-recipe-method`, {
         method: "POST",
@@ -93,7 +94,6 @@ export default function SavedRecipes() {
       const data = await aiResponse.json();
 
       const parsedData = JSON.parse(data.method).method;
-      console.log(parsedData);
       const generatedMethod = parsedData;
 
       const updateResponse = await fetch(`${BASE_URL}/recipes/${recipe.id}`, {
@@ -108,6 +108,8 @@ export default function SavedRecipes() {
       setSelectedRecipe({ ...recipe, method: generatedMethod });
     } catch (error) {
       console.error("Error handling recipe click:", error);
+    } finally {
+      setIsLoadingMethod(false);
     }
   };
 
@@ -180,17 +182,17 @@ export default function SavedRecipes() {
                 className="absolute top-2 right-2 text-gray-600"
                 onClick={() => setSelectedRecipe(null)}
               >
-                <X className="w-5 h-5 text-gray-600 hover:text-gray-900" />
+                <X className="w-5 h-5" />
               </button>
               <h2 className="text-2xl font-bold mb-4">
                 {selectedRecipe.title}
               </h2>
-              <p className="text-sm text-gray-600">
+              <h3 className="text-lg">
                 <strong>Meal Type:</strong> {selectedRecipe.mealType}
-              </p>
-              <p className="text-sm text-gray-600">
+              </h3>
+              <h3 className="text-lg">
                 <strong>Diet:</strong> {selectedRecipe.dietaryRequirements}
-              </p>
+              </h3>
               <h3 className="text-lg font-semibold mt-4">Ingredients:</h3>
               <ul className="list-disc ml-6">
                 {selectedRecipe.ingredients.map((ingredient, index) => (
@@ -198,7 +200,11 @@ export default function SavedRecipes() {
                 ))}
               </ul>
               <h3 className="text-lg font-semibold mt-4">Method:</h3>
-              <p>{selectedRecipe.method}</p>
+              {isLoadingMethod ? (
+                <p className="text-gray-500 italic">Loading instructions...</p>
+              ) : (
+                <p>{selectedRecipe.method}</p>
+              )}
             </div>
           </div>
         )}

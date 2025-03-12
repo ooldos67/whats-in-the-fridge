@@ -35,6 +35,7 @@ export default function SearchRecipes() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [savedRecipes, setSavedRecipes] = useState<string[]>([]);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+  const [isGeneratingRecipes, setIsGeneratingRecipes] = useState(false);
 
   const userId = "3e7a22e8-f0d8-4fbd-9e08-a7b9a8677bf7"; // Temp hardcoded user
   const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -117,6 +118,8 @@ export default function SearchRecipes() {
 
     async function generateRecipe() {
       try {
+        setIsGeneratingRecipes(true);
+
         const response = await fetch(`${BASE_URL}/ai-recipe`, {
           method: "POST",
           headers: {
@@ -137,6 +140,8 @@ export default function SearchRecipes() {
         setGeneratedRecipes(parsedData);
       } catch (error) {
         console.error("Error generating recipe:", error);
+      } finally {
+        setIsGeneratingRecipes(false);
       }
     }
 
@@ -309,7 +314,7 @@ export default function SearchRecipes() {
             onClick={handleSearchSubmit}
             className="transition-colors hover:scale-105 hover:cursor-pointer"
           >
-            Search Recipes
+            {isGeneratingRecipes ? "Generating..." : "Search Recipes"}
           </Button>
         </div>
 
@@ -377,17 +382,17 @@ export default function SearchRecipes() {
                 className="absolute top-2 right-2 text-gray-600"
                 onClick={() => setSelectedRecipe(null)}
               >
-                <X className="w-5 h-5 text-gray-600 hover:text-gray-900" />
+                <X className="w-5 h-5" />
               </button>
               <h2 className="text-2xl font-bold mb-4">
                 {selectedRecipe.recipeTitle}
               </h2>
-              <p className="text-sm text-gray-600">
+              <h3 className="text-lg">
                 <strong>Meal Type:</strong> {selectedRecipe.mealType}
-              </p>
-              <p className="text-sm text-gray-600">
+              </h3>
+              <h3 className="text-lg">
                 <strong>Diet:</strong> {selectedRecipe.diet}
-              </p>
+              </h3>
               <h3 className="text-lg font-semibold mt-4">Ingredients:</h3>
               <ul className="list-disc ml-6">
                 {selectedRecipe.ingredients.map((ingredient, index) => (
