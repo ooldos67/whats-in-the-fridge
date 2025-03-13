@@ -107,7 +107,7 @@ export default function SearchRecipes() {
           ? dietaryRequirements
           : "any";
 
-      let prompt = `Can you give me three tasty realistic recipes. I have these ingredients available: ${ingredientList}.The recipes should be delicious and practical, using available ingredients where possible. Additional ingredients can be used to enhance the dish. The recipe should be suitable for only ${meal} time and for people on ${diet} diet. I would like only the recipe title, list of ingredients (leave out the quantities) I need for the recipe, Meal type, and the diet.`;
+      let prompt = `Can you give me five tasty realistic recipes. I have these ingredients available: ${ingredientList}.The recipes should be delicious and practical, using available ingredients where possible. Additional ingredients can be used to enhance the dish. The recipe should be suitable for only ${meal} time and for people on ${diet} diet. I would like only the recipe title, list of ingredients (leave out the quantities) I need for the recipe, Meal type, and the diet.`;
 
       if (dietaryRequirements && dietaryRequirements !== "No Preference") {
         prompt += ` The recipe should be ${dietaryRequirements.toLowerCase()}.`;

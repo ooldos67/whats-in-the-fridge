@@ -108,6 +108,14 @@ export default function SavedRecipes() {
       if (!updateResponse.ok)
         throw new Error("Failed to update recipe in database");
 
+      setRecipes((prevRecipes) =>
+        prevRecipes.map((currentRecipe) =>
+          currentRecipe.id === recipe.id
+            ? { ...currentRecipe, method: generatedMethod }
+            : currentRecipe
+        )
+      );
+
       setSelectedRecipe({ ...recipe, method: generatedMethod });
     } catch (error) {
       console.error("Error handling recipe click:", error);

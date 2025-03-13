@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Trash } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { z } from "zod";
 
 interface Ingredient {
@@ -36,6 +36,7 @@ export default function MyFridge() {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [ingredientName, setIngredientName] = useState("");
   const [ingredientAmount, setIngredientAmount] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const userId = "3e7a22e8-f0d8-4fbd-9e08-a7b9a8677bf7"; // temp hardcoded user
   const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -85,6 +86,10 @@ export default function MyFridge() {
 
       setIngredientName("");
       setIngredientAmount("");
+
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
     } catch (error) {
       console.error("Error adding ingredient:", error);
     }
@@ -121,6 +126,7 @@ export default function MyFridge() {
 
         <form onSubmit={addIngredient} className="flex gap-4 mb-6">
           <Input
+            ref={inputRef}
             placeholder="Add ingredient"
             value={ingredientName}
             onChange={(e) => setIngredientName(e.target.value)}
