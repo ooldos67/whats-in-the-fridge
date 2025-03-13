@@ -3,9 +3,11 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import LoginButton from "@/components/ui/loginButton";
 import LogoutButton from "@/components/ui/logoutButton";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export function Dashboard() {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth0();
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gray-100">
@@ -13,8 +15,7 @@ export function Dashboard() {
         <h1 className="text-3xl font-bold">What's in the Fridge?</h1>
 
         <div className="flex gap-2">
-          <LoginButton />
-          <LogoutButton />
+          {!isAuthenticated ? <LoginButton /> : <LogoutButton />}
         </div>
       </div>
 
@@ -83,7 +84,7 @@ export function Dashboard() {
           </CardHeader>
           <CardContent>
             <p>
-              Take picture of youre phone and let AI create a list of
+              Take picture of your fridge and let AI create a list of
               ingredients for you!
             </p>
             <Button
